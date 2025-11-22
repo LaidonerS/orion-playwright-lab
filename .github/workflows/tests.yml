@@ -37,9 +37,10 @@ jobs:
           mkdir -p artifacts
           pytest --html=artifacts/report.html --self-contained-html -v
 
-      - name: Upload test artifacts
+      - name: Upload test artifacts (HTML report, screenshots, videos)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-artifacts
+          name: playwright-report-${{ github.run_number }}
           path: artifacts/
+          retention-days: 30

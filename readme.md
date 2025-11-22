@@ -1,25 +1,48 @@
 # Orion Playwright Lab
 
-A small demo web app + Playwright/pytest test suite designed for practising modern UI automation.
+Orion Playwright Lab is a small demo web app + Playwright/Python test framework, built to showcase modern QA automation practices:
 
-## Stack
+- Page Object Model (POM)
+- Cross-browser UI testing (Chromium, Firefox, WebKit)
+- Pytest + HTML reports + test artifacts (screenshots, videos)
+- GitHub Actions CI (with 30-day artifact retention)
+- Dockerized test execution
+- Data-driven & negative tests using Faker + parametrization
 
-- Static HTML/CSS/JS app served with `python -m http.server`
-- Playwright (Python) + pytest
-- GitHub Actions CI running Playwright tests on each push/PR
+---
 
-## Running locally
+## 🔧 Tech stack
 
-```bash
-# 1. Activate venv
-source venv/bin/activate
+- **Language:** Python 3.x
+- **Test runner:** Pytest
+- **UI automation:** Playwright (sync API)
+- **Reporting:** pytest-html (self-contained HTML report)
+- **Random test data:** Faker / pytest-faker
+- **Containerization:** Docker (Playwright base image)
+- **CI:** GitHub Actions (3-browser matrix)
 
-# 2. Start demo app in one terminal
-cd app
-python -m http.server 8000
+---
 
-# 3. In another terminal, run tests from project root
-cd ..
-export BASE_URL="http://127.0.0.1:8000"
-export HEADLESS="false"  # set to true for headless
-pytest -v
+## 📁 Project structure
+
+```text
+orion-playwright-lab/
+  app/                      # Static demo web app (Orion Test Lab UI)
+  tests/
+    pages/                  # Page Object Model classes
+      home_page.py
+      contact_page.py
+      login_modal.py
+    test_homepage.py        # Homepage & navigation tests
+    test_contact_form.py    # Contact form validation + Faker tests
+    test_login_modal.py     # Login flow tests
+    conftest.py             # Playwright fixtures, browser/context/page, artifacts
+  artifacts/                # Test outputs (HTML report, screenshots, videos) [gitignored]
+  .github/
+    workflows/
+      tests.yml             # CI: cross-browser test matrix + artifacts
+  Dockerfile                # Dockerized test runner
+  run_tests.sh              # Starts demo server + runs pytest inside container
+  requirements.txt
+  pytest.ini
+  README.md

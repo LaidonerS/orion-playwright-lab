@@ -1,3 +1,4 @@
+import pytest
 from tests.pages.contact_page import ContactPage
 
 @pytest.mark.smoke

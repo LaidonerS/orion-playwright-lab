@@ -1,3 +1,4 @@
+import pytest
 from tests.pages.home_page import HomePage
 
 @pytest.mark.smoke

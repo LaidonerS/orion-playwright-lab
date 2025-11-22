@@ -73,3 +73,23 @@ Visual tests are **limited to Chromium** by design:
 - Visual tests call a helper that skips when `BROWSER != "chromium"`
 
 This avoids false positives from small rendering differences between browsers, while still catching real UI changes in the primary target browser.
+
+### ♿ Accessibility testing (axe-core)
+
+The project includes a basic accessibility audit using **axe-core** and Playwright:
+
+- `tests/test_accessibility.py`
+  - `test_homepage_has_no_serious_accessibility_violations`
+
+How it works:
+
+- Injects the axe-core library into the page at runtime
+- Runs `axe.run()` from the browser context
+- Collects all `violations`
+- Filters only those with `impact` = `serious` or `critical`
+- Fails the test if any such issues exist, printing a readable summary of:
+  - rule id
+  - description
+  - sample targets and HTML snippets
+
+This demonstrates how UI automation can be combined with automated accessibility checks as part of a continuous integration pipeline.

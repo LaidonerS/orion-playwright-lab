@@ -1,6 +1,7 @@
 from tests.pages.home_page import HomePage
 
-
+@pytest.mark.smoke
+@pytest.mark.ui
 def test_homepage_title_and_sections(page, base_url):
     home = HomePage(page, base_url)
     home.goto()
@@ -13,7 +14,8 @@ def test_homepage_title_and_sections(page, base_url):
     assert home.products_link.is_visible()
     assert home.contact_link.is_visible()
 
-
+@pytest.mark.smoke
+@pytest.mark.ui
 def test_products_cards_present(page, base_url):
     home = HomePage(page, base_url)
     home.goto_products_section()

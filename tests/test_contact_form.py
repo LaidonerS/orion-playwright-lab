@@ -1,6 +1,7 @@
 from tests.pages.contact_page import ContactPage
 
-
+@pytest.mark.smoke
+@pytest.mark.ui
 def test_contact_form_validation(page, base_url):
     contact = ContactPage(page, base_url)
     contact.goto()
@@ -11,7 +12,8 @@ def test_contact_form_validation(page, base_url):
         error = contact.error_for(field_id)
         assert error.inner_text() != ""
 
-
+@pytest.mark.smoke
+@pytest.mark.ui
 def test_contact_form_success(page, base_url):
     contact = ContactPage(page, base_url)
     contact.goto()

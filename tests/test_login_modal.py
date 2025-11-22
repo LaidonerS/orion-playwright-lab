@@ -1,6 +1,7 @@
 from tests.pages.login_modal import LoginModal
 
-
+@pytest.mark.regression
+@pytest.mark.ui
 def test_login_flow_success(page, base_url):
     login = LoginModal(page, base_url)
     login.open_products_section()

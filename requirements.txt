@@ -4,7 +4,7 @@ iniconfig==2.3.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
 packaging==25.0
-playwright==1.56.0
+playwright==1.55.0
 pluggy==1.6.0
 pyee==13.0.0
 Pygments==2.19.2

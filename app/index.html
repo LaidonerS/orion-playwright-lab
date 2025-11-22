@@ -67,36 +67,52 @@
       </div>
     </section>
 
-<section id="activity" aria-labelledby="activity-heading">
-  <div class="card" data-testid="scenario-activity">
-    <h2 id="activity-heading">Recent Activity Feed</h2>
-    <p class="card-subtitle">
-      Demo of async UI, fake API and network mocking.
-    </p>
+    <!-- Activity + Session log section -->
+    <section id="activity" aria-labelledby="activity-heading" class="section">
+      <div class="card" data-testid="scenario-activity">
+        <h2 id="activity-heading">Recent Activity Feed</h2>
+        <p class="card-subtitle">
+          Demo of async UI, fake API and session activity log.
+        </p>
 
-    <button
-      type="button"
-      data-testid="load-activity"
-    >
-      Load Recent Activity
-    </button>
+        <button
+          type="button"
+          data-testid="load-activity"
+        >
+          Load Recent Activity
+        </button>
 
-    <p
-      class="status"
-      data-testid="activity-status"
-      aria-live="polite"
-    >
-      No activity loaded yet.
-    </p>
+        <p
+          class="status"
+          data-testid="activity-status"
+          aria-live="polite"
+        >
+          No activity loaded yet.
+        </p>
 
-    <ul
-      data-testid="activity-list"
-      aria-label="Recent activity"
-    >
-      <!-- items will be injected here -->
-    </ul>
-  </div>
-</section>
+        <ul
+          data-testid="activity-list"
+          aria-label="Recent activity"
+        >
+          <!-- items will be injected here -->
+        </ul>
+
+        <hr />
+
+        <!-- Session activity log -->
+        <h3>Session Activity</h3>
+        <p class="card-subtitle">
+          Actions you take in this demo are logged here.
+        </p>
+
+        <ul
+          data-testid="session-activity-list"
+          aria-label="Session activity"
+        >
+          <!-- session items injected here -->
+        </ul>
+      </div>
+    </section>
 
     <!-- Contact / feedback form -->
     <section id="contact" class="section">
@@ -153,11 +169,11 @@
       <h2>Demo Login</h2>
       <p class="modal-subtitle">Use this to simulate login test scenarios.</p>
 
-      <form id="login-form" novalidate>
+      <form id="login-form" novalidate data-testid="login-form">
         <div class="form-row">
           <label for="login-email">Email</label>
           <input id="login-email" name="login-email" type="email" required
-                 placeholder="qa@example.com" />
+                 placeholder="qa@example.com" data-testid="login-email" />
           <span class="error-message" data-error-for="login-email"></span>
         </div>
 
@@ -165,7 +181,7 @@
           <label for="login-password">Password</label>
           <input id="login-password" name="login-password" type="password" required
                  minlength="4"
-                 placeholder="••••" />
+                 placeholder="••••" data-testid="login-password" />
           <span class="error-message" data-error-for="login-password"></span>
         </div>
 
@@ -182,48 +198,129 @@
       </form>
     </div>
   </div>
-<script>
-  async function loadActivity() {
-    const statusEl = document.querySelector('[data-testid="activity-status"]');
-    const listEl = document.querySelector('[data-testid="activity-list"]');
 
-    if (!statusEl || !listEl) return;
+  <!-- Session activity log helpers -->
+  <script>
+    // --- Session activity log helpers ---
 
-    statusEl.textContent = "Loading…";
-    listEl.innerHTML = "";
+    window.orionSessionActivityLog = window.orionSessionActivityLog || [];
 
-    try {
-      const response = await fetch("/api/activity");
-      if (!response.ok) {
-        throw new Error("Network error");
-      }
+    function renderSessionActivity() {
+      const listEl = document.querySelector('[data-testid="session-activity-list"]');
+      if (!listEl) return;
 
-      const data = await response.json();
+      listEl.innerHTML = "";
 
-      if (!Array.isArray(data) || data.length === 0) {
-        statusEl.textContent = "No recent activity.";
+      if (!window.orionSessionActivityLog || window.orionSessionActivityLog.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "No interactions yet.";
+        listEl.appendChild(li);
         return;
       }
 
-      statusEl.textContent = `Loaded ${data.length} event${data.length > 1 ? "s" : ""}.`;
-      data.forEach((item) => {
+      window.orionSessionActivityLog.forEach((item) => {
         const li = document.createElement("li");
-        li.setAttribute("data-testid", "activity-item");
+        li.setAttribute("data-testid", "session-activity-item");
         li.setAttribute("tabindex", "0");
         li.textContent = `${item.when} • ${item.message}`;
         listEl.appendChild(li);
       });
-    } catch (e) {
-      statusEl.textContent = "Could not load activity. Please try again.";
     }
-  }
 
-  const loadBtn = document.querySelector('[data-testid="load-activity"]');
-  if (loadBtn) {
-    loadBtn.addEventListener("click", () => {
-      loadActivity();
+    function addSessionActivity(message) {
+      const entry = {
+        when: new Date().toLocaleTimeString(),
+        message,
+      };
+      // newest first
+      window.orionSessionActivityLog.unshift(entry);
+      renderSessionActivity();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderSessionActivity();
     });
-  }
-</script>
+  </script>
+
+  <!-- Remote activity feed (fake API) -->
+  <script>
+    async function loadActivity() {
+      const statusEl = document.querySelector('[data-testid="activity-status"]');
+      const listEl = document.querySelector('[data-testid="activity-list"]');
+
+      if (!statusEl || !listEl) return;
+
+      statusEl.textContent = "Loading…";
+      listEl.innerHTML = "";
+
+      try {
+        const response = await fetch("/api/activity");
+        if (!response.ok) {
+          throw new Error("Network error");
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          statusEl.textContent = "No recent activity.";
+          return;
+        }
+
+        statusEl.textContent = `Loaded ${data.length} event${data.length > 1 ? "s" : ""}.`;
+        data.forEach((item) => {
+          const li = document.createElement("li");
+          li.setAttribute("data-testid", "activity-item");
+          li.setAttribute("tabindex", "0");
+          li.textContent = `${item.when} • ${item.message}`;
+          listEl.appendChild(li);
+        });
+      } catch (e) {
+        statusEl.textContent = "Could not load activity. Please try again.";
+      }
+    }
+
+    const loadBtn = document.querySelector('[data-testid="load-activity"]');
+    if (loadBtn) {
+      loadBtn.addEventListener("click", () => {
+        loadActivity();
+      });
+    }
+  </script>
+
+  <!-- Hook login + contact form into session activity -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Contact form: log when submission is successful
+      const contactForm = document.getElementById("contact-form");
+      if (contactForm) {
+        contactForm.addEventListener("submit", () => {
+          // Allow app.js to run validation & toggle success message first
+          setTimeout(() => {
+            const successEl = document.querySelector('[data-testid="contact-success"]');
+            if (successEl && !successEl.hasAttribute("hidden")) {
+              const topicSelect = document.getElementById("topic");
+              const topicValue = topicSelect ? topicSelect.value || "unknown" : "unknown";
+              addSessionActivity(`Contact form submitted (${topicValue})`);
+            }
+          }, 150);
+        });
+      }
+
+      // Login form: log when login is successful
+      const loginForm = document.getElementById("login-form");
+      if (loginForm) {
+        loginForm.addEventListener("submit", () => {
+          setTimeout(() => {
+            const successEl = document.querySelector('[data-testid="login-success"]');
+            if (successEl && !successEl.hasAttribute("hidden")) {
+              const emailInput = document.getElementById("login-email");
+              const email = emailInput ? emailInput.value.trim() : "unknown user";
+              addSessionActivity(`Login success for ${email}`);
+            }
+          }, 150);
+        });
+      }
+    });
+  </script>
 </body>
 </html>

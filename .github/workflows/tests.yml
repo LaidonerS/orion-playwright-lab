@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -29,8 +29,17 @@ jobs:
           python -m http.server 8000 &
           sleep 5
 
-      - name: Run Playwright tests
+      - name: Run Playwright tests with HTML report
         env:
           BASE_URL: "http://127.0.0.1:8000"
           HEADLESS: "true"
-        run: pytest -v
+        run: |
+          mkdir -p artifacts
+          pytest --html=artifacts/report.html --self-contained-html -v
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: artifacts/

@@ -1,22 +1,15 @@
-from playwright.sync_api import Page
+from tests.pages.login_modal import LoginModal
 
 
-def test_login_flow_success(page: Page, base_url: str):
-  page.goto(base_url + "#products")
+def test_login_flow_success(page, base_url):
+    login = LoginModal(page, base_url)
+    login.open_products_section()
+    login.open()
 
-  page.get_by_test_id("scenario-login").get_by_role("button", name="Open Login Modal").click()
+    login.login("qa@example.com", "test1234")
 
-  # Modal is visible
-  modal = page.locator("#login-modal")
-  modal.wait_for(state="visible")
+    login.success_message.wait_for(state="visible")
+    text = login.success_message.inner_text()
 
-  page.fill("#login-email", "qa@example.com")
-  page.fill("#login-password", "test1234")
-
-  page.get_by_test_id("login-submit").click()
-
-  success = page.get_by_test_id("login-success")
-  success.wait_for(state="visible")
-
-  assert "Logged in as" in success.inner_text()
-  assert "qa@example.com" in success.inner_text()
+    assert "Logged in as" in text
+    assert "qa@example.com" in text

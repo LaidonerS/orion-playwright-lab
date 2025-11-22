@@ -1,58 +1,28 @@
-from playwright.sync_api import Page
+from tests.pages.contact_page import ContactPage
 
 
-def test_contact_form_validation(page: Page, base_url: str):
-  page.goto(base_url + "#contact")
+def test_contact_form_validation(page, base_url):
+    contact = ContactPage(page, base_url)
+    contact.goto()
 
-  # Click submit with empty form
-  page.get_by_test_id("submit-contact").click()
+    contact.submit_empty_form()
 
-  # Error messages should be visible
-  for field_id in ["name", "email", "topic", "message"]:
-    error = page.locator(f'[data-error-for="{field_id}"]')
-    assert error.inner_text() != ""
-
-
-def test_contact_form_success(page: Page, base_url: str):
-  page.goto(base_url + "#contact")
-
-  page.fill("#name", "Sten QA")
-  page.fill("#email", "sten@example.com")
-  page.select_option("#topic", "idea")
-  page.fill("#message", "This is a test message for Playwright.")
-
-  page.get_by_test_id("submit-contact").click()
-
-  success = page.get_by_test_id("contact-success")
-  success.wait_for(state="visible")
-
-  assert "Thank you" in success.inner_text()
-from playwright.sync_api import Page
+    for field_id in ["name", "email", "topic", "message"]:
+        error = contact.error_for(field_id)
+        assert error.inner_text() != ""
 
 
-def test_contact_form_validation(page: Page, base_url: str):
-  page.goto(base_url + "#contact")
+def test_contact_form_success(page, base_url):
+    contact = ContactPage(page, base_url)
+    contact.goto()
 
-  # Click submit with empty form
-  page.get_by_test_id("submit-contact").click()
+    contact.fill_form(
+        name="Sten QA",
+        email="sten@example.com",
+        topic="idea",
+        message="This is a test message for Playwright.",
+    )
+    contact.submit()
 
-  # Error messages should be visible
-  for field_id in ["name", "email", "topic", "message"]:
-    error = page.locator(f'[data-error-for="{field_id}"]')
-    assert error.inner_text() != ""
-
-
-def test_contact_form_success(page: Page, base_url: str):
-  page.goto(base_url + "#contact")
-
-  page.fill("#name", "Sten QA")
-  page.fill("#email", "sten@example.com")
-  page.select_option("#topic", "idea")
-  page.fill("#message", "This is a test message for Playwright.")
-
-  page.get_by_test_id("submit-contact").click()
-
-  success = page.get_by_test_id("contact-success")
-  success.wait_for(state="visible")
-
-  assert "Thank you" in success.inner_text()
+    contact.success_message.wait_for(state="visible")
+    assert "Thank you" in contact.success_message.inner_text()

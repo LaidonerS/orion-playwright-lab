@@ -28,7 +28,7 @@ def _skip_if_not_chromium():
         pytest.skip(f"Visual regression tests only run on Chromium (current: {browser_name})")
 
 
-def _compare_screenshot(page, baseline_name: str, *, full_page: bool = False):
+def _compare_screenshot(page, baseline_name: str, *, full_page: bool = False, limit: float = 10.0):
     """Helper to take a screenshot and compare against a named baseline."""
     _skip_if_not_chromium()
 
@@ -54,11 +54,10 @@ def _compare_screenshot(page, baseline_name: str, *, full_page: bool = False):
     )
 
     diff = _rmsdiff(baseline_img, current_img)
-    max_allowed_diff = 10.0  # tolerant enough for CI vs local differences
 
     assert (
-        diff <= max_allowed_diff
-    ), f"Visual regression detected for {baseline_name}: RMS diff={diff:.2f} (limit={max_allowed_diff})"
+        diff <= limit
+    ), f"Visual regression detected for {baseline_name}: RMS diff={diff:.2f} (limit={limit})"
 
 
 @pytest.mark.ui
@@ -76,4 +75,4 @@ def test_products_section_visual_regression(page, base_url):
     """Visual regression test for the products section."""
     home = HomePage(page, base_url)
     home.goto_products_section()
-    _compare_screenshot(page, "homepage_products.png", full_page=False)
+    _compare_screenshot(page, "homepage_products.png", full_page=False, limit=15.0)

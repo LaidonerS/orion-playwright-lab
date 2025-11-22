@@ -48,7 +48,10 @@ def browser(playwright_instance):
 
 @pytest.fixture
 def context(browser, request):
-    context = browser.new_context(record_video_dir=str(VIDEOS_DIR))
+    context = browser.new_context(
+        record_video_dir=str(VIDEOS_DIR),
+        viewport={"width": 1280, "height": 720},
+    )
     yield context
     context.close()
 
@@ -74,3 +77,4 @@ def pytest_runtest_makereport(item, call):
 @pytest.fixture
 def base_url():
     return BASE_URL
+

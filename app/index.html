@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Orion Test Lab – Demo App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="logo">Orion<span>Lab</span></div>
+    <nav class="nav">
+      <a href="#dashboard" class="nav-link">Dashboard</a>
+      <a href="#products" class="nav-link">Products</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Dashboard section -->
+    <section id="dashboard" class="section">
+      <h1 data-testid="page-title">QA Automation Playground</h1>
+      <p class="subtitle">
+        A tiny web app designed for practising Playwright tests in real-life flows.
+      </p>
+
+      <div class="kpi-grid">
+        <div class="card" data-testid="kpi-users">
+          <h2>Active Users</h2>
+          <p class="kpi-value" id="kpi-users-count">128</p>
+        </div>
+        <div class="card" data-testid="kpi-coverage">
+          <h2>Test Coverage</h2>
+          <p class="kpi-value" id="kpi-coverage-value">82%</p>
+        </div>
+        <div class="card" data-testid="kpi-builds">
+          <h2>Last Build</h2>
+          <p class="kpi-value" id="kpi-last-build">passing</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products section -->
+    <section id="products" class="section">
+      <h2>Featured Test Scenarios</h2>
+      <div class="card-grid">
+        <article class="card product-card" data-testid="scenario-login">
+          <h3>Login Flow</h3>
+          <p>Validate happy path, error states, and inline validation.</p>
+          <button class="btn primary" data-open-login>Open Login Modal</button>
+        </article>
+
+        <article class="card product-card" data-testid="scenario-filters">
+          <h3>Filtering & Search</h3>
+          <p>Test filtering, sorting, and empty state behavior.</p>
+          <button class="btn" disabled data-testid="coming-soon-btn">
+            Coming soon
+          </button>
+        </article>
+
+        <article class="card product-card" data-testid="scenario-contact">
+          <h3>Contact Form</h3>
+          <p>Validate client-side validation and success messages.</p>
+          <a href="#contact" class="btn outline">Jump to form</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Contact / feedback form -->
+    <section id="contact" class="section">
+      <h2>Contact / Feedback</h2>
+      <p>Use this form to simulate a typical user feedback flow.</p>
+
+      <form id="contact-form" novalidate>
+        <div class="form-row">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" required
+                 placeholder="Your name" />
+          <span class="error-message" data-error-for="name"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required
+                 placeholder="you@example.com" />
+          <span class="error-message" data-error-for="email"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="topic">Topic</label>
+          <select id="topic" name="topic" required>
+            <option value="">Select a topic</option>
+            <option value="bug">Bug report</option>
+            <option value="idea">Feature idea</option>
+            <option value="other">Other</option>
+          </select>
+          <span class="error-message" data-error-for="topic"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="4" required
+                    placeholder="Tell us what you want to test here..."></textarea>
+          <span class="error-message" data-error-for="message"></span>
+        </div>
+
+        <button type="submit" class="btn primary" data-testid="submit-contact">
+          Send feedback
+        </button>
+
+        <p class="form-success" data-testid="contact-success" hidden>
+          ✅ Thank you – your feedback was captured (fake, but useful for tests).
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <!-- Login modal -->
+  <div class="modal-backdrop" id="login-modal" aria-hidden="true">
+    <div class="modal">
+      <h2>Demo Login</h2>
+      <p class="modal-subtitle">Use this to simulate login test scenarios.</p>
+
+      <form id="login-form" novalidate>
+        <div class="form-row">
+          <label for="login-email">Email</label>
+          <input id="login-email" name="login-email" type="email" required
+                 placeholder="qa@example.com" />
+          <span class="error-message" data-error-for="login-email"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="login-password">Password</label>
+          <input id="login-password" name="login-password" type="password" required
+                 minlength="4"
+                 placeholder="••••" />
+          <span class="error-message" data-error-for="login-password"></span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn" data-close-login>Cancel</button>
+          <button type="submit" class="btn primary" data-testid="login-submit">
+            Login
+          </button>
+        </div>
+
+        <p class="form-success" data-testid="login-success" hidden>
+          🎉 Logged in as <span id="login-user-label">qa@example.com</span>
+        </p>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

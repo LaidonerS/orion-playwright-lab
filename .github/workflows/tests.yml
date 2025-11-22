@@ -1,0 +1,36 @@
+name: Orion Playwright Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m playwright install --with-deps
+
+      - name: Start demo app server
+        working-directory: app
+        run: |
+          python -m http.server 8000 &
+          sleep 5
+
+      - name: Run Playwright tests
+        env:
+          BASE_URL: "http://127.0.0.1:8000"
+          HEADLESS: "true"
+        run: pytest -v

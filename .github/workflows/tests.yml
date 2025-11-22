@@ -8,6 +8,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    env:
+      BROWSER: ${{ matrix.browser }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,14 +41,15 @@ jobs:
         env:
           BASE_URL: "http://127.0.0.1:8000"
           HEADLESS: "true"
+          BROWSER: ${{ matrix.browser }}
         run: |
           mkdir -p artifacts
           pytest --html=artifacts/report.html --self-contained-html -v
 
-      - name: Upload test artifacts (HTML report, screenshots, videos)
+      - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ github.run_number }}
+          name: playwright-report-${{ matrix.browser }}-${{ github.run_number }}
           path: artifacts/
           retention-days: 30

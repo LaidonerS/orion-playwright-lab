@@ -6,6 +6,26 @@ class HomePage:
         self.page = page
         self.base_url = base_url
 
+    def goto_activity_section(self):
+        self.page.goto(self.base_url + "#activity")
+
+    @property
+    def activity_card(self):
+        return self.page.get_by_test_id("scenario-activity")
+
+    @property
+    def activity_load_button(self):
+        return self.page.get_by_test_id("load-activity")
+
+    @property
+    def activity_status(self):
+        return self.page.get_by_test_id("activity-status")
+
+    @property
+    def activity_items(self):
+        return self.page.get_by_test_id("activity-item")
+
+
     # Navigation
     def goto(self):
         self.page.goto(self.base_url)

@@ -67,6 +67,37 @@
       </div>
     </section>
 
+<section id="activity" aria-labelledby="activity-heading">
+  <div class="card" data-testid="scenario-activity">
+    <h2 id="activity-heading">Recent Activity Feed</h2>
+    <p class="card-subtitle">
+      Demo of async UI, fake API and network mocking.
+    </p>
+
+    <button
+      type="button"
+      data-testid="load-activity"
+    >
+      Load Recent Activity
+    </button>
+
+    <p
+      class="status"
+      data-testid="activity-status"
+      aria-live="polite"
+    >
+      No activity loaded yet.
+    </p>
+
+    <ul
+      data-testid="activity-list"
+      aria-label="Recent activity"
+    >
+      <!-- items will be injected here -->
+    </ul>
+  </div>
+</section>
+
     <!-- Contact / feedback form -->
     <section id="contact" class="section">
       <h2>Contact / Feedback</h2>
@@ -151,5 +182,48 @@
       </form>
     </div>
   </div>
+<script>
+  async function loadActivity() {
+    const statusEl = document.querySelector('[data-testid="activity-status"]');
+    const listEl = document.querySelector('[data-testid="activity-list"]');
+
+    if (!statusEl || !listEl) return;
+
+    statusEl.textContent = "Loading…";
+    listEl.innerHTML = "";
+
+    try {
+      const response = await fetch("/api/activity");
+      if (!response.ok) {
+        throw new Error("Network error");
+      }
+
+      const data = await response.json();
+
+      if (!Array.isArray(data) || data.length === 0) {
+        statusEl.textContent = "No recent activity.";
+        return;
+      }
+
+      statusEl.textContent = `Loaded ${data.length} event${data.length > 1 ? "s" : ""}.`;
+      data.forEach((item) => {
+        const li = document.createElement("li");
+        li.setAttribute("data-testid", "activity-item");
+        li.setAttribute("tabindex", "0");
+        li.textContent = `${item.when} • ${item.message}`;
+        listEl.appendChild(li);
+      });
+    } catch (e) {
+      statusEl.textContent = "Could not load activity. Please try again.";
+    }
+  }
+
+  const loadBtn = document.querySelector('[data-testid="load-activity"]');
+  if (loadBtn) {
+    loadBtn.addEventListener("click", () => {
+      loadActivity();
+    });
+  }
+</script>
 </body>
 </html>

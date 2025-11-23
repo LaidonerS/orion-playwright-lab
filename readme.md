@@ -46,30 +46,3 @@ orion-playwright-lab/
   requirements.txt
   pytest.ini
   README.md
-
-### 🎨 Visual regression testing
-
-This project includes **visual regression tests** using Playwright screenshots + a simple image diff (Pillow):
-
-- `tests/test_homepage_visual.py`
-  - `test_homepage_visual_regression` – compares the main homepage view against `visual_baseline/homepage.png`
-  - `test_products_section_visual_regression` – compares the products section against `visual_baseline/homepage_products.png`
-
-How it works:
-
-- On the **first run**, if a baseline image does not exist, the test:
-  - Captures a screenshot
-  - Saves it under `visual_baseline/`
-  - Calls `pytest.skip(...)` to avoid failing
-- On subsequent runs, the test:
-  - Captures a fresh screenshot
-  - Loads the corresponding baseline image
-  - Computes an RMS pixel difference
-  - Fails if the difference exceeds a threshold (`max_allowed_diff`)
-
-Visual tests are **limited to Chromium** by design:
-
-- CI sets `BROWSER=chromium|firefox|webkit`
-- Visual tests call a helper that skips when `BROWSER != "chromium"`
-
-This avoids false positives from small rendering differences between browsers, while still catching real UI changes in the primary target browser.
